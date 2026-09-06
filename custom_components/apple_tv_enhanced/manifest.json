@@ -1,0 +1,10 @@
+{
+  "domain": "apple_tv_enhanced",
+  "name": "Apple TV Enhanced",
+  "version": "0.0.3",
+  "documentation": "https://github.com/Nappyty11/apple-tv-enhanced-ha",
+  "codeowners": ["@Nappyty11"],
+  "config_flow": true,
+  "iot_class": "local_push",
+  "requirements": []
+}

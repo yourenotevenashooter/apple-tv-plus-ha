@@ -1,0 +1,27 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Apple TV Enhanced",
+        "description": "Connect Apple TV Enhanced to your existing Home Assistant Apple TV media player.",
+        "data": {
+          "media_player_entity": "Apple TV media player entity",
+          "device_id": "Apple TV remote device ID",
+          "custom_source_name": "Custom Source Name",
+          "custom_source_target": "Custom Source Target"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Apple TV Enhanced",
+        "data": {
+          "custom_source_name": "Custom Source Name",
+          "custom_source_target": "Custom Source Target"
+        }
+      }
+    }
+  }
+}
