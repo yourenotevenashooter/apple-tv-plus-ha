@@ -47,7 +47,9 @@ class AppleTVPlusConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_MEDIA_PLAYER_ENTITY): selector.EntitySelector(
-                        selector.EntitySelectorConfig(domain="media_player")
+                        selector.EntitySelectorConfig(
+                            domain="media_player", integration="apple_tv"
+                        )
                     ),
                     vol.Optional(CONF_DEVICE_ID): selector.DeviceSelector(
                         selector.DeviceSelectorConfig(integration="apple_tv")

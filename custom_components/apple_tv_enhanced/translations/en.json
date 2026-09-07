@@ -6,7 +6,11 @@
         "description": "Connect Apple TV Plus to your existing Home Assistant Apple TV media player. You can add custom sources afterward from Configure.",
         "data": {
           "media_player_entity": "Apple TV media player",
-          "device_id": "Apple TV remote device (optional — needed for Fast Sleep and Home Screen)"
+          "device_id": "Apple TV remote device"
+        },
+        "data_description": {
+          "media_player_entity": "The media player entity created by Home Assistant's native Apple TV integration — only Apple TVs are listed here.",
+          "device_id": "Optional. The matching device entry for that SAME Apple TV, used for Fast Sleep and Home Screen commands. If you have more than one Apple TV, make sure this is the device for the one you picked above, not a different one."
         }
       }
     },
@@ -27,9 +31,14 @@
       },
       "add_source": {
         "title": "Add a custom source",
+        "description": "Name is what shows up in the source list on the media player. Target is either an app's bundle ID (e.g. com.netflix.Netflix) or a URL/deep link (e.g. youtube://www.youtube.com/watch?v=VIDEO_ID) — anything containing \"://\" is treated as a link, anything else as an app.",
         "data": {
           "name": "Name",
-          "target": "App bundle ID or deep link"
+          "target": "Target (bundle ID or deep link)"
+        },
+        "data_description": {
+          "name": "What you'll see in the source list, e.g. \"Severance\" or \"Netflix\".",
+          "target": "Either an app bundle ID like com.netflix.Netflix, or a full URL/deep link like https://tv.apple.com/show/... or youtube://..."
         }
       },
       "edit_source": {
@@ -40,9 +49,14 @@
       },
       "edit_source_details": {
         "title": "Edit source",
+        "description": "Target is either an app's bundle ID (e.g. com.netflix.Netflix) or a URL/deep link (e.g. youtube://www.youtube.com/watch?v=VIDEO_ID) — anything containing \"://\" is treated as a link, anything else as an app.",
         "data": {
           "name": "Name",
-          "target": "App bundle ID or deep link"
+          "target": "Target (bundle ID or deep link)"
+        },
+        "data_description": {
+          "name": "What you'll see in the source list, e.g. \"Severance\" or \"Netflix\".",
+          "target": "Either an app bundle ID like com.netflix.Netflix, or a full URL/deep link like https://tv.apple.com/show/... or youtube://..."
         }
       },
       "remove_source": {
