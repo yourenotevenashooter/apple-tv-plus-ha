@@ -17,8 +17,10 @@ from .const import (
     CONF_DEVICE_ID,
     CONF_MEDIA_PLAYER_ENTITY,
     DOMAIN,
+    EVENT_HOMEKIT_TV_REMOTE_KEY_PRESSED,
     HOME_SCREEN_LABEL,
     HOME_SCREEN_TARGET,
+    HOMEKIT_REMOTE_KEY_TO_COMMAND,
     LEGACY_CUSTOM_SOURCE_NAME,
     LEGACY_CUSTOM_SOURCE_TARGET,
     NATIVE_SOURCE_PREFIX,
@@ -63,8 +65,45 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
             "name": "Apple TV Plus",
             "manufacturer": "Apple TV Plus",
             "model": "Enhanced Apple TV Controller",
-            "sw_version": "0.0.7",
+            "sw_version": "0.0.8",
         }
+
+    async def async_added_to_hass(self) -> None:
+        """Start listening for Apple Home's HomeKit remote-popup button presses.
+
+        Requires this entity to be bridged via Home Assistant's HomeKit Bridge
+        integration in "accessory mode" (device_class "tv" alone isn't enough —
+        HA's own docs call this out as a requirement for Television-type
+        accessories). Once it is, Apple Home's Device Controls page shows a
+        remote-control popup for it; every button press there other than
+        play/pause (which Home Assistant already wires up on its own) fires
+        this event with no effect until something handles it — that's this.
+        """
+        await super().async_added_to_hass()
+        self.async_on_remove(
+            self.hass.bus.async_listen(
+                EVENT_HOMEKIT_TV_REMOTE_KEY_PRESSED, self._handle_homekit_remote_key
+            )
+        )
+
+    async def _handle_homekit_remote_key(self, event) -> None:
+        """Forward one Apple Home remote-popup button press to the Apple TV."""
+        if event.data.get("entity_id") != self.entity_id:
+            return
+
+        command = HOMEKIT_REMOTE_KEY_TO_COMMAND.get(event.data.get("key_name"))
+        if command is None:
+            return
+
+        await self.hass.services.async_call(
+            "remote",
+            "send_command",
+            {
+                "device_id": self._device_id,
+                "command": command,
+            },
+            blocking=True,
+        )
 
     def _get_custom_sources(self) -> list[dict]:
         """Return configured custom sources, migrating a v0.0.3 single source."""

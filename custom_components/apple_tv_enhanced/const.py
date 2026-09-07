@@ -24,3 +24,37 @@ HOME_SCREEN_TARGET = "__HOME__"
 # how to launch it — this avoids opening a second pyatv connection just to
 # discover or launch installed apps.
 NATIVE_SOURCE_PREFIX = "__NATIVE_SOURCE__:"
+
+# v0.0.8+: Home Assistant's own HomeKit Bridge integration, when a media_player
+# is bridged into Apple Home as a Television accessory (device_class "tv", in
+# HomeKit "accessory mode"), gives Apple Home a remote-control popup with a
+# D-pad, select, and back/exit buttons. Play/pause is wired up automatically
+# by Home Assistant's homekit component itself since it maps straight to our
+# existing PLAY/PAUSE support — but every other button (arrows, select,
+# back, exit, and the transport keys) just fires this HA event with no
+# effect on the actual Apple TV until something listens for it. That's what
+# this maps: this event's key_name values, forwarded to the native Apple
+# TV's remote entity as real pyatv remote commands, so the Home app's
+# remote popup actually drives the Apple TV.
+EVENT_HOMEKIT_TV_REMOTE_KEY_PRESSED = "homekit_tv_remote_key_pressed"
+
+# HomeKit key_name -> pyatv RemoteControl command (what remote.send_command
+# accepts for the native apple_tv integration's remote entity). "back" maps
+# to a single "menu" press (that's what the physical Apple TV remote's menu
+# button does), "exit" maps to "top_menu" (a long menu press — jumps further,
+# to the true top-level Home Screen) so the two keys stay meaningfully
+# different instead of both doing the same thing. HomeKit's "information"
+# key has no real Apple TV equivalent and is intentionally left unmapped.
+HOMEKIT_REMOTE_KEY_TO_COMMAND = {
+    "arrow_up": "up",
+    "arrow_down": "down",
+    "arrow_left": "left",
+    "arrow_right": "right",
+    "select": "select",
+    "back": "menu",
+    "exit": "top_menu",
+    "rewind": "skip_backward",
+    "fast_forward": "skip_forward",
+    "next_track": "next",
+    "previous_track": "previous",
+}

@@ -1,7 +1,7 @@
 {
   "domain": "apple_tv_enhanced",
   "name": "Apple TV Plus",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "documentation": "https://github.com/yourenotevenashooter/apple-tv-plus-ha",
   "issue_tracker": "https://github.com/yourenotevenashooter/apple-tv-plus-ha/issues",
   "codeowners": ["@yourenotevenashooter"],
