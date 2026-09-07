@@ -1,4 +1,4 @@
-"""Media player platform for Apple TV Enhanced."""
+"""Media player platform for Apple TV Plus."""
 
 import asyncio
 
@@ -12,7 +12,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .apps import APP_IDS
-from .const import DOMAIN
+from .const import (
+    CONF_CUSTOM_SOURCES,
+    CONF_DEVICE_ID,
+    CONF_MEDIA_PLAYER_ENTITY,
+    DOMAIN,
+    HOME_SCREEN_LABEL,
+    HOME_SCREEN_TARGET,
+    LEGACY_CUSTOM_SOURCE_NAME,
+    LEGACY_CUSTOM_SOURCE_TARGET,
+)
 
 
 async def async_setup_entry(
@@ -20,20 +29,20 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Apple TV Enhanced media player."""
-    async_add_entities([AppleTVEnhancedMediaPlayer(hass, entry)])
+    """Set up the Apple TV Plus media player."""
+    async_add_entities([AppleTVPlusMediaPlayer(hass, entry)])
 
 
-class AppleTVEnhancedMediaPlayer(MediaPlayerEntity):
-    """Enhanced Apple TV media player."""
+class AppleTVPlusMediaPlayer(MediaPlayerEntity):
+    """Apple TV Plus media player — a facade over the native Apple TV integration."""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.hass = hass
         self.entry = entry
-        self._media_player_entity = entry.data["media_player_entity"]
-        self._device_id = entry.data.get("device_id")
+        self._media_player_entity = entry.data[CONF_MEDIA_PLAYER_ENTITY]
+        self._device_id = entry.data.get(CONF_DEVICE_ID)
 
-        self._attr_name = "Apple TV Enhanced"
+        self._attr_name = "Apple TV Plus"
         self._attr_unique_id = f"{entry.entry_id}_media_player"
         self._attr_device_class = "tv"
         self._attr_supported_features = (
@@ -44,27 +53,45 @@ class AppleTVEnhancedMediaPlayer(MediaPlayerEntity):
             | MediaPlayerEntityFeature.PAUSE
         )
         self._attr_source = None
-        self._attr_source_list = list(self._get_sources().keys())
 
         self._attr_device_info = {
             "identifiers": {(DOMAIN, entry.entry_id)},
-            "name": "Apple TV Enhanced",
-            "manufacturer": "Nappyty11",
+            "name": "Apple TV Plus",
+            "manufacturer": "Apple TV Plus",
             "model": "Enhanced Apple TV Controller",
-            "sw_version": "0.0.3",
+            "sw_version": "0.0.4",
         }
 
+    def _get_custom_sources(self) -> list[dict]:
+        """Return configured custom sources, migrating a v0.0.3 single source."""
+        sources = self.entry.options.get(CONF_CUSTOM_SOURCES)
+        if sources is not None:
+            return sources
+
+        legacy_name = (
+            self.entry.options.get(LEGACY_CUSTOM_SOURCE_NAME)
+            or self.entry.data.get(LEGACY_CUSTOM_SOURCE_NAME, "")
+        ).strip()
+        legacy_target = (
+            self.entry.options.get(LEGACY_CUSTOM_SOURCE_TARGET)
+            or self.entry.data.get(LEGACY_CUSTOM_SOURCE_TARGET, "")
+        ).strip()
+
+        if legacy_name and legacy_target:
+            return [{"name": legacy_name, "target": legacy_target}]
+        return []
+
     def _get_sources(self):
-        """Return built-in and custom sources."""
+        """Return built-in apps + custom sources + Home Screen."""
         sources = dict(APP_IDS)
 
-        name = self.entry.data.get("custom_source_name", "").strip()
-        target = self.entry.data.get("custom_source_target", "").strip()
+        for custom in self._get_custom_sources():
+            name = custom.get("name", "").strip()
+            target = custom.get("target", "").strip()
+            if name and target:
+                sources[name] = target
 
-        if name and target:
-            sources[name] = target
-
-        sources["Home Screen"] = "__HOME__"
+        sources[HOME_SCREEN_LABEL] = HOME_SCREEN_TARGET
         return sources
 
     @property
@@ -82,8 +109,8 @@ class AppleTVEnhancedMediaPlayer(MediaPlayerEntity):
 
     @property
     def source_list(self):
-        """Return source list."""
-        return self._attr_source_list
+        """Return the current source list (recomputed so option edits show up)."""
+        return list(self._get_sources().keys())
 
     async def async_turn_on(self) -> None:
         """Turn Apple TV on."""
@@ -119,7 +146,7 @@ class AppleTVEnhancedMediaPlayer(MediaPlayerEntity):
         target = sources[source]
         self._attr_source = source
 
-        if target == "__HOME__":
+        if target == HOME_SCREEN_TARGET:
             await self.hass.services.async_call(
                 "remote",
                 "send_command",

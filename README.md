@@ -1,41 +1,43 @@
-# Apple TV Enhanced for Home Assistant
+# Apple TV Plus for Home Assistant
 
-Apple TV Enhanced adds a unified Apple TV media player with app launching, Home Screen shortcuts, custom sources/deep links, Fast Sleep, and HomeKit support.
+*(formerly "Apple TV Enhanced" — same integration, new name; the internal domain stays `apple_tv_enhanced` so existing installs keep working.)*
+
+Apple TV Plus adds a unified Apple TV media player with app launching, Home Screen shortcuts, custom sources/deep links, Fast Sleep, and HomeKit support, on top of Home Assistant's native Apple TV integration.
 
 ## Current Version
 
-**0.0.3**
+**0.0.4**
 
 ## Requirements
 
 1. Add and configure the official Home Assistant **Apple TV** integration first.
-2. Apple TV Enhanced uses that native integration as its underlying Apple TV connection.
+2. Apple TV Plus uses that native integration as its underlying Apple TV connection.
 
 ## Installation with HACS
 
 Add this repository as a custom HACS repository:
 
-`https://github.com/Nappyty11/apple-tv-enhanced-ha`
+`https://github.com/yourenotevenashooter/apple-tv-plus-ha`
 
 Select **Integration**.
 
-Then install **Apple TV Enhanced**.
+Then install **Apple TV Plus**.
 
 ## Setup
 
 Go to:
 
-**Settings → Devices & Services → Add Integration → Apple TV Enhanced**
+**Settings → Devices & Services → Add Integration → Apple TV Plus**
 
-Enter the entity ID of your existing Apple TV media player and the remote device ID when requested.
+Pick your existing Apple TV media player entity, and optionally its remote device (needed for Fast Sleep and Home Screen). Custom sources are no longer part of first-time setup — add them afterward from **Configure**.
 
 ## Features
 
 - Apple TV app launcher
 - Home Screen shortcut
 - Fast Sleep
-- Custom source name and target
-- Deep-link groundwork
+- Multiple custom sources — add, edit, and delete from Configure, no reinstall needed
+- Deep links (app bundle IDs or URLs)
 - HomeKit exposure
 - HACS installation
 
@@ -58,14 +60,12 @@ Enter the entity ID of your existing Apple TV media player and the remote device
 - Crunchyroll
 - Calendar by Dashbd
 
-## Custom Sources
+## Managing Custom Sources
 
-The current version supports one custom source through:
+Go to **Settings → Devices & Services → Apple TV Plus → Configure** to add, edit, or remove sources. Each source has:
 
-- **Custom Source Name**
-- **Custom Source Target**
-
-Targets can be an Apple TV app bundle identifier or a URL/deep link.
+- **Name** — what shows up in the source list
+- **Target** — an app bundle identifier or a URL/deep link
 
 Examples:
 
@@ -73,30 +73,33 @@ Examples:
 
 `youtube://www.youtube.com/watch?v=VIDEO_ID`
 
+Changes apply immediately — no need to remove and re-add the integration.
+
 ## Home Screen
 
-Selecting **Home Screen** sends the Apple TV Home command instead of launching an app.
+Selecting **Home Screen** sends the Apple TV Home command instead of launching an app. It's a fixed built-in source and can't be renamed or removed.
 
 ## HomeKit
 
-The Apple TV Enhanced media player can be exposed through Home Assistant's HomeKit Bridge. For TV-style behavior, expose the media player as an accessory according to Home Assistant's HomeKit documentation.
+The Apple TV Plus media player can be exposed through Home Assistant's HomeKit Bridge. For TV-style behavior, expose the media player as an accessory according to Home Assistant's HomeKit documentation.
 
 ## Known Limitations
 
-- Apple TV power behavior can vary between Home Assistant and Apple Home depending on the native Apple TV integration/device state.
+- Apple TV power behavior can vary between Home Assistant and Apple Home depending on the native Apple TV integration/device state — Apple Home tends to be more consistent for power.
 - Apps must be installed on the Apple TV for their bundle identifier to launch.
-- The current custom-source editor supports one custom source; multiple-source management is planned for the next release.
+- Bundle IDs are believed correct based on testing, but third-party apps can change theirs — treat any that don't launch as worth double-checking.
 
 ## Roadmap
 
-### 0.0.4
+### Future
 
-- Multiple custom sources
-- Add/edit/delete source management
-- Cleaner options flow
-- Expanded deep-link support
-- Favorite shows and movies
-- Better source management without reinstalling
+- Volume controls
+- Remote control actions / additional Apple TV commands
+- Expanded, community-verified bundle-ID database
+- Dynamic installed-app discovery
+- Favorite shows/movies as one-tap shortcuts
+- Better Home Assistant dashboard power handling
+- More HomeKit behavior testing
 
 ## License
 

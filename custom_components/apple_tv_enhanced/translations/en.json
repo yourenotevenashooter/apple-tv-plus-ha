@@ -2,26 +2,60 @@
   "config": {
     "step": {
       "user": {
-        "title": "Apple TV Enhanced",
-        "description": "Connect Apple TV Enhanced to your existing Home Assistant Apple TV media player.",
+        "title": "Apple TV Plus",
+        "description": "Connect Apple TV Plus to your existing Home Assistant Apple TV media player. You can add custom sources afterward from Configure.",
         "data": {
-          "media_player_entity": "Apple TV media player entity",
-          "device_id": "Apple TV remote device ID",
-          "custom_source_name": "Custom Source Name",
-          "custom_source_target": "Custom Source Target"
+          "media_player_entity": "Apple TV media player",
+          "device_id": "Apple TV remote device (optional — needed for Fast Sleep and Home Screen)"
         }
       }
+    },
+    "abort": {
+      "already_configured": "This Apple TV is already set up."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Apple TV Enhanced",
+        "title": "Manage custom sources",
+        "menu_options": {
+          "add_source": "Add a source",
+          "edit_source": "Edit a source",
+          "remove_source": "Remove a source",
+          "done": "Done"
+        }
+      },
+      "add_source": {
+        "title": "Add a custom source",
         "data": {
-          "custom_source_name": "Custom Source Name",
-          "custom_source_target": "Custom Source Target"
+          "name": "Name",
+          "target": "App bundle ID or deep link"
+        }
+      },
+      "edit_source": {
+        "title": "Choose a source to edit",
+        "data": {
+          "source": "Source"
+        }
+      },
+      "edit_source_details": {
+        "title": "Edit source",
+        "data": {
+          "name": "Name",
+          "target": "App bundle ID or deep link"
+        }
+      },
+      "remove_source": {
+        "title": "Choose a source to remove",
+        "data": {
+          "source": "Source"
         }
       }
+    },
+    "error": {
+      "missing_fields": "Name and target are both required.",
+      "reserved_name": "\"Home Screen\" is reserved — pick a different name.",
+      "duplicate_name": "A source with that name already exists."
     }
   }
 }
