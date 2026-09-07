@@ -23,6 +23,19 @@ Select **Integration**.
 
 Then install **Apple TV Plus**.
 
+### Getting listed in HACS's default repositories
+
+Right now, installing requires adding this as a custom repository (above). Getting listed in HACS's own default list — so it shows up in HACS search with no custom-repository step — is a real submission process to a separate repository, `hacs/default`, and the last few steps require your own GitHub account (can't be done from here). Steps, in order:
+
+1. **On GitHub**, add a repository description, add some topics (e.g. `home-assistant`, `hacs`, `apple-tv`), and confirm issues are enabled — all in the repo's own Settings.
+2. **Push this update** (adds `.github/workflows/hacs.yml` and `hassfest.yml`) and confirm both Actions pass with no errors under the repo's **Actions** tab. These are what HACS's own submission process checks for.
+3. **Publish an actual GitHub Release** (Releases → Draft a new release, not just a git tag) once the Actions are green — tag it `v1.0.0` to match `manifest.json`.
+4. **Fork [hacs/default](https://github.com/hacs/default)**, branch off `master`, and add this repository's URL alphabetically to the `integration` file in that fork.
+5. **Open a PR** from that fork using their PR template. Do this from your personal GitHub account, not an organization — HACS requires the PR stay editable by you.
+
+A bot in that PR re-runs the same validation and will flag anything missing.
+
+
 ## Setup
 
 Go to:
@@ -121,6 +134,8 @@ Once that's done:
 - Remote control is reached through the Apple Remote app / Control Center, not necessarily an icon on the accessory's own Device Controls tile — see the HomeKit section above.
 - HomeKit's "information" remote button has no Apple TV equivalent and is intentionally left unmapped (does nothing).
 - "Back" is sent as a single Menu press and "Exit" as a long Menu press (jump to the true Home Screen) — the closest real Apple TV button behavior for each, but not identical to how those buttons behave on every other kind of TV in Apple Home.
+- **AirPlay directly to this accessory doesn't update its state.** If your Apple TV also shows up as its own AirPlay target in Control Center/the Remote app (common when it's bridged to HomeKit), sending audio there plays correctly, but this integration's state stays Off/Idle instead of Playing. This integration only ever mirrors the native Apple TV entity's own reported state — if that AirPlay session isn't something the native integration's own connection detects, there's nothing accurate for this integration to mirror. Playback state works correctly for anything played through the native connection itself (an app on the Apple TV, or `media_player.play_media`). Not yet confirmed whether this is fixable here at all, or is a Home Assistant/pyatv-level gap — candidate for further investigation in 1.1+.
+- **Brand icon may show as unavailable in HACS's own downloads panel.** As of Home Assistant 2026.3+, integration brand icons are served through a new inline mechanism (`custom_components/<domain>/brand/`, used here). HACS's own frontend hasn't been updated to read that new path yet ([hacs/integration#5223](https://github.com/hacs/integration/issues/5223)), so the icon may show "icon not available" specifically inside HACS's UI even though it displays correctly elsewhere in Home Assistant. This is a HACS bug being tracked upstream, not something fixable from this repository — `home-assistant/brands` itself no longer accepts new icon submissions for custom (non-core) integrations, so the inline approach is the current correct one regardless.
 
 ## Roadmap
 
@@ -128,7 +143,6 @@ Once that's done:
 
 ### Future (1.1+)
 
-- Submit `icon.png`/`logo.png` to [home-assistant/brands](https://github.com/home-assistant/brands) so HACS shows this repository in its default search instead of requiring "add custom repository"
 - More third-party bundle IDs, as they get community/real-device verification (see Known Limitations)
 - Home Assistant's built-in diagnostics download for the config entry, to make troubleshooting reports easier
 - Convenience for setting up a second Apple TV Plus entity (copying custom sources from an existing one)
