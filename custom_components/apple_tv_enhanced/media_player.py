@@ -83,7 +83,7 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
         return []
 
     def _get_installed_apps(self) -> dict[str, str]:
-        """Return apps the native Apple TV integration reports as actually installed.
+        """Return extra apps the native Apple TV integration currently reports live.
 
         Reads the native entity's own `source_list` state attribute — the same
         data its own app-launching already relies on — instead of opening a
@@ -91,9 +91,13 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
         connection risks conflicting with the native integration's existing
         one to the same device, so this stays a read of state HA already has.
 
-        Returns {} if that attribute isn't present (older HA/pyatv, or this
-        Apple TV's pairing doesn't support app listing) so callers can fall
-        back to the static APP_IDS list.
+        In practice this attribute tends to reflect recently-used/backgrounded
+        apps rather than every app installed, so it's layered on top of the
+        static APP_IDS list in _get_sources() rather than replacing it.
+
+        Returns {} if the attribute isn't present (older HA/pyatv, or this
+        Apple TV's pairing doesn't support app listing) — harmless either way
+        since it's purely additive.
         """
         state = self.hass.states.get(self._media_player_entity)
         if state is None:
@@ -114,9 +118,14 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
         input picker, which reads this same list. The star is display-only;
         the source's stored name stays plain so editing it isn't affected.
 
-        For apps: if the native Apple TV integration currently reports a live
-        installed-apps list, that's used (so only apps actually on the Apple
-        TV show up); otherwise this falls back to the static APP_IDS list.
+        For apps: the static, curated APP_IDS list is always included as the
+        baseline. The native Apple TV integration's live source_list (when
+        present) is layered on TOP of it rather than replacing it — in
+        practice that live list only reflects recently-used/backgrounded apps
+        (the app-switcher contents), not every app actually installed, so
+        using it alone silently hid apps that otherwise work fine. Layering
+        it just adds any extra names the native integration knows about
+        beyond the curated list, with no risk of losing anything.
         """
         favorites: dict[str, str] = {}
         others: dict[str, str] = {}
@@ -133,7 +142,8 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
 
         sources: dict[str, str] = {}
         sources.update(favorites)
-        sources.update(self._get_installed_apps() or APP_IDS)
+        sources.update(APP_IDS)
+        sources.update(self._get_installed_apps())
         sources.update(others)
         sources[HOME_SCREEN_LABEL] = HOME_SCREEN_TARGET
         return sources
