@@ -52,6 +52,9 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
             | MediaPlayerEntityFeature.SELECT_SOURCE
             | MediaPlayerEntityFeature.PLAY
             | MediaPlayerEntityFeature.PAUSE
+            | MediaPlayerEntityFeature.VOLUME_SET
+            | MediaPlayerEntityFeature.VOLUME_STEP
+            | MediaPlayerEntityFeature.VOLUME_MUTE
         )
         self._attr_source = None
 
@@ -60,7 +63,7 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
             "name": "Apple TV Plus",
             "manufacturer": "Apple TV Plus",
             "model": "Enhanced Apple TV Controller",
-            "sw_version": "0.0.6",
+            "sw_version": "0.0.7",
         }
 
     def _get_custom_sources(self) -> list[dict]:
@@ -166,6 +169,30 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
         """Return the current source list (recomputed so option edits show up)."""
         return list(self._get_sources().keys())
 
+    @property
+    def volume_level(self):
+        """Return volume level, passed straight through from the native entity.
+
+        Not every Apple TV setup exposes volume (it depends on the native
+        integration's connection being able to report/control it — e.g. via
+        AirPlay volume or HDMI-CEC to the TV/soundbar). Returns None if the
+        native entity doesn't report a volume_level attribute, which HA
+        handles fine for an entity that supports volume features but has no
+        current reading.
+        """
+        state = self.hass.states.get(self._media_player_entity)
+        if state is None:
+            return None
+        return state.attributes.get("volume_level")
+
+    @property
+    def is_volume_muted(self):
+        """Return mute state, passed straight through from the native entity."""
+        state = self.hass.states.get(self._media_player_entity)
+        if state is None:
+            return None
+        return state.attributes.get("is_volume_muted")
+
     async def async_turn_on(self) -> None:
         """Turn Apple TV on."""
         await self.hass.services.async_call(
@@ -265,3 +292,49 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
             {"entity_id": self._media_player_entity},
             blocking=True,
         )
+
+    async def async_set_volume_level(self, volume: float) -> None:
+        """Set volume level, forwarded to the native entity.
+
+        Same facade pattern as play/pause: no new pyatv connection, just
+        delegate to the native integration's own volume handling. If this
+        Apple TV setup doesn't support volume, the native entity's own
+        service call is what will no-op/warn — nothing to guard here.
+        """
+        await self.hass.services.async_call(
+            "media_player",
+            "volume_set",
+            {"entity_id": self._media_player_entity, "volume_level": volume},
+            blocking=True,
+        )
+        self.async_write_ha_state()
+
+    async def async_volume_up(self) -> None:
+        """Step volume up, forwarded to the native entity."""
+        await self.hass.services.async_call(
+            "media_player",
+            "volume_up",
+            {"entity_id": self._media_player_entity},
+            blocking=True,
+        )
+        self.async_write_ha_state()
+
+    async def async_volume_down(self) -> None:
+        """Step volume down, forwarded to the native entity."""
+        await self.hass.services.async_call(
+            "media_player",
+            "volume_down",
+            {"entity_id": self._media_player_entity},
+            blocking=True,
+        )
+        self.async_write_ha_state()
+
+    async def async_mute_volume(self, mute: bool) -> None:
+        """Mute/unmute, forwarded to the native entity."""
+        await self.hass.services.async_call(
+            "media_player",
+            "volume_mute",
+            {"entity_id": self._media_player_entity, "is_volume_muted": mute},
+            blocking=True,
+        )
+        self.async_write_ha_state()

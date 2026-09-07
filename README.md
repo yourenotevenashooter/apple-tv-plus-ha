@@ -6,7 +6,7 @@ Apple TV Plus adds a unified Apple TV media player with app launching, Home Scre
 
 ## Current Version
 
-**0.0.6**
+**0.0.7**
 
 ## Requirements
 
@@ -39,6 +39,7 @@ Pick your existing Apple TV media player entity, and optionally its remote devic
 - Multiple custom sources — add, edit, and delete from Configure, no reinstall needed
 - Favorites — star a source to sort it to the top of the list, including in Apple Home's TV input picker
 - Dynamic app discovery — when the native Apple TV integration reports additional apps it currently knows about beyond the built-in list below, those are added automatically
+- Volume up/down, set, and mute — when your Apple TV setup reports volume support (e.g. via AirPlay volume or HDMI-CEC to the TV/soundbar)
 - Deep links (app bundle IDs or URLs)
 - HomeKit exposure
 - HACS installation
@@ -93,12 +94,12 @@ The Apple TV Plus media player can be exposed through Home Assistant's HomeKit B
 - Bundle IDs are believed correct based on testing, but third-party apps can change theirs — treat any that don't launch as worth double-checking.
 - Dynamic app discovery depends on your native Apple TV integration exposing a `source_list` state attribute — not guaranteed on every pairing/setup, and in practice it tends to reflect recently-used apps rather than every app installed. It's always layered on top of the built-in app list, never a replacement for it.
 - There's an open pyatv issue (#2868) where tvOS can silently refuse to launch an app while pyatv reports success, with no fix yet. If a launch ever silently does nothing, this upstream bug is the likely cause, not this integration.
+- Volume controls only work if the native Apple TV integration itself can report/control volume for your setup (this varies by Apple TV model and how it's connected to your TV/soundbar). If volume isn't available there, it won't be available here either.
 
 ## Roadmap
 
 ### Future
 
-- Volume controls
 - Remote control actions / additional Apple TV commands
 - Expanded, community-verified bundle-ID database
 - Better Home Assistant dashboard power handling
