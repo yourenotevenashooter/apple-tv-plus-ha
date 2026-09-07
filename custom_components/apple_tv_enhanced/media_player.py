@@ -65,7 +65,7 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
             "name": "Apple TV Plus",
             "manufacturer": "Apple TV Plus",
             "model": "Enhanced Apple TV Controller",
-            "sw_version": "0.0.8",
+            "sw_version": "1.0.0",
         }
 
     async def async_added_to_hass(self) -> None:
@@ -192,11 +192,23 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
 
     @property
     def state(self):
-        """Return Apple TV state."""
+        """Mirror the native Apple TV entity's actual playback state.
+
+        Earlier versions only ever reported OFF or IDLE, so no dashboard
+        card, voice assistant, or automation checking "is this playing"
+        got a useful answer, and it was part of why power/status felt
+        inconsistent between Home Assistant and Apple Home. This mirrors
+        the native entity's real state (playing, paused, buffering, etc.)
+        whenever it's one Home Assistant recognizes, falling back to IDLE
+        for anything unexpected rather than guessing wrong.
+        """
         state = self.hass.states.get(self._media_player_entity)
-        if state is None or state.state in ["off", "unavailable", "unknown"]:
+        if state is None or state.state in ("off", "unavailable", "unknown"):
             return MediaPlayerState.OFF
-        return MediaPlayerState.IDLE
+        try:
+            return MediaPlayerState(state.state)
+        except ValueError:
+            return MediaPlayerState.IDLE
 
     @property
     def source(self):
