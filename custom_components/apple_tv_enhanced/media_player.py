@@ -21,6 +21,7 @@ from .const import (
     HOME_SCREEN_TARGET,
     LEGACY_CUSTOM_SOURCE_NAME,
     LEGACY_CUSTOM_SOURCE_TARGET,
+    NATIVE_SOURCE_PREFIX,
 )
 
 
@@ -59,7 +60,7 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
             "name": "Apple TV Plus",
             "manufacturer": "Apple TV Plus",
             "model": "Enhanced Apple TV Controller",
-            "sw_version": "0.0.5",
+            "sw_version": "0.0.6",
         }
 
     def _get_custom_sources(self) -> list[dict]:
@@ -81,13 +82,41 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
             return [{"name": legacy_name, "target": legacy_target}]
         return []
 
+    def _get_installed_apps(self) -> dict[str, str]:
+        """Return apps the native Apple TV integration reports as actually installed.
+
+        Reads the native entity's own `source_list` state attribute — the same
+        data its own app-launching already relies on — instead of opening a
+        second pyatv connection to ask the Apple TV directly. A second direct
+        connection risks conflicting with the native integration's existing
+        one to the same device, so this stays a read of state HA already has.
+
+        Returns {} if that attribute isn't present (older HA/pyatv, or this
+        Apple TV's pairing doesn't support app listing) so callers can fall
+        back to the static APP_IDS list.
+        """
+        state = self.hass.states.get(self._media_player_entity)
+        if state is None:
+            return {}
+
+        native_sources = state.attributes.get("source_list") or []
+        return {
+            name: f"{NATIVE_SOURCE_PREFIX}{name}"
+            for name in native_sources
+            if isinstance(name, str) and name.strip()
+        }
+
     def _get_sources(self):
-        """Return sources in display order: favorites, built-in apps, other custom sources, Home Screen.
+        """Return sources in display order: favorites, apps, other custom sources, Home Screen.
 
         Favorites are shown with a star prefix and sorted to the top so they're
         immediately visible in the source list — including in Apple Home's TV
         input picker, which reads this same list. The star is display-only;
         the source's stored name stays plain so editing it isn't affected.
+
+        For apps: if the native Apple TV integration currently reports a live
+        installed-apps list, that's used (so only apps actually on the Apple
+        TV show up); otherwise this falls back to the static APP_IDS list.
         """
         favorites: dict[str, str] = {}
         others: dict[str, str] = {}
@@ -104,7 +133,7 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
 
         sources: dict[str, str] = {}
         sources.update(favorites)
-        sources.update(APP_IDS)
+        sources.update(self._get_installed_apps() or APP_IDS)
         sources.update(others)
         sources[HOME_SCREEN_LABEL] = HOME_SCREEN_TARGET
         return sources
@@ -168,6 +197,23 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
                 {
                     "device_id": self._device_id,
                     "command": "home",
+                },
+                blocking=True,
+            )
+            self.async_write_ha_state()
+            return
+
+        if target.startswith(NATIVE_SOURCE_PREFIX):
+            # A live, actually-installed app from the native integration's own
+            # list — let IT launch it via its existing connection, rather than
+            # us guessing a bundle ID or opening a second pyatv connection.
+            native_source_name = target[len(NATIVE_SOURCE_PREFIX):]
+            await self.hass.services.async_call(
+                "media_player",
+                "select_source",
+                {
+                    "entity_id": self._media_player_entity,
+                    "source": native_source_name,
                 },
                 blocking=True,
             )

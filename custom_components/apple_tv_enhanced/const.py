@@ -15,3 +15,12 @@ LEGACY_CUSTOM_SOURCE_TARGET = "custom_source_target"
 
 HOME_SCREEN_LABEL = "Home Screen"
 HOME_SCREEN_TARGET = "__HOME__"
+
+# v0.0.6+: prefix marking a source that came from the native Apple TV
+# integration's own live app list (its `source_list` state attribute),
+# rather than our static APP_IDS fallback or a user-defined custom source.
+# Selecting one of these calls media_player.select_source on the NATIVE
+# entity instead of play_media, since the native integration already knows
+# how to launch it — this avoids opening a second pyatv connection just to
+# discover or launch installed apps.
+NATIVE_SOURCE_PREFIX = "__NATIVE_SOURCE__:"
