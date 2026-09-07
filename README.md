@@ -6,7 +6,7 @@ Apple TV Plus adds a unified Apple TV media player with app launching, Home Scre
 
 ## Current Version
 
-**0.0.4**
+**0.0.5**
 
 ## Requirements
 
@@ -37,6 +37,7 @@ Pick your existing Apple TV media player entity, and optionally its remote devic
 - Home Screen shortcut
 - Fast Sleep
 - Multiple custom sources — add, edit, and delete from Configure, no reinstall needed
+- Favorites — star a source to sort it to the top of the list, including in Apple Home's TV input picker
 - Deep links (app bundle IDs or URLs)
 - HomeKit exposure
 - HACS installation
@@ -66,6 +67,7 @@ Go to **Settings → Devices & Services → Apple TV Plus → Configure** to add
 
 - **Name** — what shows up in the source list
 - **Target** — an app bundle identifier or a URL/deep link
+- **Favorite** — sorts this source to the top of the list with a ★, in front of the built-in apps
 
 Examples:
 
@@ -97,7 +99,6 @@ The Apple TV Plus media player can be exposed through Home Assistant's HomeKit B
 - Remote control actions / additional Apple TV commands
 - Expanded, community-verified bundle-ID database
 - Dynamic installed-app discovery
-- Favorite shows/movies as one-tap shortcuts
 - Better Home Assistant dashboard power handling
 - More HomeKit behavior testing
 

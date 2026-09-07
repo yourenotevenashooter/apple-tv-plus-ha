@@ -59,7 +59,7 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
             "name": "Apple TV Plus",
             "manufacturer": "Apple TV Plus",
             "model": "Enhanced Apple TV Controller",
-            "sw_version": "0.0.4",
+            "sw_version": "0.0.5",
         }
 
     def _get_custom_sources(self) -> list[dict]:
@@ -82,15 +82,30 @@ class AppleTVPlusMediaPlayer(MediaPlayerEntity):
         return []
 
     def _get_sources(self):
-        """Return built-in apps + custom sources + Home Screen."""
-        sources = dict(APP_IDS)
+        """Return sources in display order: favorites, built-in apps, other custom sources, Home Screen.
+
+        Favorites are shown with a star prefix and sorted to the top so they're
+        immediately visible in the source list — including in Apple Home's TV
+        input picker, which reads this same list. The star is display-only;
+        the source's stored name stays plain so editing it isn't affected.
+        """
+        favorites: dict[str, str] = {}
+        others: dict[str, str] = {}
 
         for custom in self._get_custom_sources():
             name = custom.get("name", "").strip()
             target = custom.get("target", "").strip()
-            if name and target:
-                sources[name] = target
+            if not name or not target:
+                continue
+            if custom.get("favorite"):
+                favorites[f"★ {name}"] = target
+            else:
+                others[name] = target
 
+        sources: dict[str, str] = {}
+        sources.update(favorites)
+        sources.update(APP_IDS)
+        sources.update(others)
         sources[HOME_SCREEN_LABEL] = HOME_SCREEN_TARGET
         return sources
 

@@ -128,7 +128,13 @@ class AppleTVPlusOptionsFlow(config_entries.OptionsFlow):
             elif name.lower() in existing:
                 errors["name"] = "duplicate_name"
             else:
-                self._sources.append({"name": name, "target": target})
+                self._sources.append(
+                    {
+                        "name": name,
+                        "target": target,
+                        "favorite": user_input.get("favorite", False),
+                    }
+                )
                 return await self.async_step_init()
 
         return self.async_show_form(
@@ -137,6 +143,7 @@ class AppleTVPlusOptionsFlow(config_entries.OptionsFlow):
                 {
                     vol.Required("name"): str,
                     vol.Required("target"): str,
+                    vol.Optional("favorite", default=False): bool,
                 }
             ),
             errors=errors,
@@ -176,7 +183,11 @@ class AppleTVPlusOptionsFlow(config_entries.OptionsFlow):
             elif name.lower() in existing:
                 errors["name"] = "duplicate_name"
             else:
-                self._sources[self._edit_index] = {"name": name, "target": target}
+                self._sources[self._edit_index] = {
+                    "name": name,
+                    "target": target,
+                    "favorite": user_input.get("favorite", False),
+                }
                 return await self.async_step_init()
 
         return self.async_show_form(
@@ -185,6 +196,9 @@ class AppleTVPlusOptionsFlow(config_entries.OptionsFlow):
                 {
                     vol.Required("name", default=current["name"]): str,
                     vol.Required("target", default=current["target"]): str,
+                    vol.Optional(
+                        "favorite", default=current.get("favorite", False)
+                    ): bool,
                 }
             ),
             errors=errors,

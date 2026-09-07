@@ -34,11 +34,13 @@
         "description": "Name is what shows up in the source list on the media player. Target is either an app's bundle ID (e.g. com.netflix.Netflix) or a URL/deep link (e.g. youtube://www.youtube.com/watch?v=VIDEO_ID) — anything containing \"://\" is treated as a link, anything else as an app.",
         "data": {
           "name": "Name",
-          "target": "Target (bundle ID or deep link)"
+          "target": "Target (bundle ID or deep link)",
+          "favorite": "Favorite (shows with a ★ at the top of the source list)"
         },
         "data_description": {
           "name": "What you'll see in the source list, e.g. \"Severance\" or \"Netflix\".",
-          "target": "Either an app bundle ID like com.netflix.Netflix, or a full URL/deep link like https://tv.apple.com/show/... or youtube://..."
+          "target": "Either an app bundle ID like com.netflix.Netflix, or a full URL/deep link like https://tv.apple.com/show/... or youtube://...",
+          "favorite": "Favorites sort to the top of the source list, including in Apple Home's TV input picker."
         }
       },
       "edit_source": {
@@ -52,11 +54,13 @@
         "description": "Target is either an app's bundle ID (e.g. com.netflix.Netflix) or a URL/deep link (e.g. youtube://www.youtube.com/watch?v=VIDEO_ID) — anything containing \"://\" is treated as a link, anything else as an app.",
         "data": {
           "name": "Name",
-          "target": "Target (bundle ID or deep link)"
+          "target": "Target (bundle ID or deep link)",
+          "favorite": "Favorite (shows with a ★ at the top of the source list)"
         },
         "data_description": {
           "name": "What you'll see in the source list, e.g. \"Severance\" or \"Netflix\".",
-          "target": "Either an app bundle ID like com.netflix.Netflix, or a full URL/deep link like https://tv.apple.com/show/... or youtube://..."
+          "target": "Either an app bundle ID like com.netflix.Netflix, or a full URL/deep link like https://tv.apple.com/show/... or youtube://...",
+          "favorite": "Favorites sort to the top of the source list, including in Apple Home's TV input picker."
         }
       },
       "remove_source": {
