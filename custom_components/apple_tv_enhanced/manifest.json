@@ -1,11 +1,11 @@
 {
   "domain": "apple_tv_enhanced",
   "name": "Apple TV Plus",
-  "version": "1.0.0",
-  "documentation": "https://github.com/yourenotevenashooter/apple-tv-plus-ha",
-  "issue_tracker": "https://github.com/yourenotevenashooter/apple-tv-plus-ha/issues",
   "codeowners": ["@yourenotevenashooter"],
   "config_flow": true,
+  "documentation": "https://github.com/yourenotevenashooter/apple-tv-plus-ha",
   "iot_class": "local_push",
-  "requirements": []
+  "issue_tracker": "https://github.com/yourenotevenashooter/apple-tv-plus-ha/issues",
+  "requirements": [],
+  "version": "1.0.0"
 }
