@@ -31,7 +31,7 @@
       },
       "add_source": {
         "title": "Add a custom source",
-        "description": "Name is what shows up in the source list on the media player. Target is either an app's bundle ID (e.g. com.netflix.Netflix) or a URL/deep link (e.g. youtube://www.youtube.com/watch?v=VIDEO_ID) — anything containing \"://\" is treated as a link, anything else as an app.",
+        "description": "Name is what shows up in the source list on the media player. Target is either an app's bundle ID (e.g. com.netflix.Netflix) or a deep link to a show or video. Anything that looks like a link is opened as a link, anything else as an app.",
         "data": {
           "name": "Name",
           "target": "Target (bundle ID or deep link)",
@@ -39,7 +39,7 @@
         },
         "data_description": {
           "name": "What you'll see in the source list, e.g. \"Severance\" or \"Netflix\".",
-          "target": "Either an app bundle ID like com.netflix.Netflix, or a full URL/deep link like https://tv.apple.com/show/... or youtube://...",
+          "target": "Either an app bundle ID like com.netflix.Netflix, or a full deep link such as a tv.apple.com show page or a YouTube video link.",
           "favorite": "Favorites sort to the top of the source list, including in Apple Home's TV input picker."
         }
       },
@@ -51,7 +51,7 @@
       },
       "edit_source_details": {
         "title": "Edit source",
-        "description": "Target is either an app's bundle ID (e.g. com.netflix.Netflix) or a URL/deep link (e.g. youtube://www.youtube.com/watch?v=VIDEO_ID) — anything containing \"://\" is treated as a link, anything else as an app.",
+        "description": "Target is either an app's bundle ID (e.g. com.netflix.Netflix) or a deep link to a show or video. Anything that looks like a link is opened as a link, anything else as an app.",
         "data": {
           "name": "Name",
           "target": "Target (bundle ID or deep link)",
@@ -59,7 +59,7 @@
         },
         "data_description": {
           "name": "What you'll see in the source list, e.g. \"Severance\" or \"Netflix\".",
-          "target": "Either an app bundle ID like com.netflix.Netflix, or a full URL/deep link like https://tv.apple.com/show/... or youtube://...",
+          "target": "Either an app bundle ID like com.netflix.Netflix, or a full deep link such as a tv.apple.com show page or a YouTube video link.",
           "favorite": "Favorites sort to the top of the source list, including in Apple Home's TV input picker."
         }
       },
